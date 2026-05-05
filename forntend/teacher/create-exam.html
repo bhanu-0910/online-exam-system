@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Exam</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Teacher</h3>
+        <a href="dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
+        <a href="question-bank.html"><i class="fa fa-book"></i> Question Bank</a>
+        <a href="create-exam.html" class="active"><i class="fa fa-pen"></i> Create Exam</a>
+        <a href="schedule.html"><i class="fa fa-clock"></i> Schedule</a>
+        <a href="results.html"><i class="fa fa-chart-bar"></i> Results</a>
+        <a href="../login.html"><i class="fa fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="topbar">
+            <button onclick="window.history.back()">⬅ Back</button>
+        </div>
+
+        <h2>Create Exam</h2>
+
+        <div class="card">
+
+            <!-- ✅ INPUTS -->
+            <input id="title" placeholder="Title">
+            <input id="subject" placeholder="Subject">
+            <input id="duration" placeholder="Duration">
+
+            <select id="type">
+                <option value="MCQ">MCQ</option>
+                <option value="Subjective">Subjective</option>
+                <option value="Coding">Coding</option>
+            </select>
+
+            <select id="category">
+                <option value="">Select Category</option>
+                <option value="GATE">GATE</option>
+                <option value="JEE Mains">JEE Mains</option>
+                <option value="JEE Advanced">JEE Advanced</option>
+                <option value="BITSAT">BITSAT</option>
+                <option value="Placement">Placement</option>
+            </select>
+
+            <button onclick="createExam()">Create</button>
+
+        </div>
+
+        <h3>All Exams</h3>
+        <ul id="examList"></ul>
+
+    </div>
+
+</div>
+
+<script>
+
+// ✅ FIXED FUNCTION
+async function createExam() {
+
+    let title = document.getElementById("title").value;
+    let subject = document.getElementById("subject").value;
+    let duration = document.getElementById("duration").value;
+    let type = document.getElementById("type").value;
+    let category = document.getElementById("category").value;
+
+    if(!title || !subject || !duration){
+        alert("Fill all fields");
+        return;
+    }
+
+    let res = await fetch("http://localhost:5000/create-exam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, subject, duration, type, category })
+    });
+
+    let data = await res.json();
+
+    alert(data.message || "Exam Created Successfully");
+
+    loadExams();
+}
+
+
+// LOAD EXAMS
+async function loadExams() {
+
+    let exams = await (await fetch("http://localhost:5000/exams")).json();
+
+    let list = document.getElementById("examList");
+    list.innerHTML = "";
+
+    if(exams.length === 0){
+        list.innerHTML = "<li>No exams yet</li>";
+        return;
+    }
+
+    exams.forEach(e => {
+        list.innerHTML += `
+        <li>
+            ${e.title} (${e.subject})
+            <button onclick="deleteExam(${e.id})">Delete</button>
+        </li>`;
+    });
+}
+
+
+// DELETE EXAM
+async function deleteExam(id) {
+    await fetch(`http://localhost:5000/delete-exam/${id}`, { method: "DELETE" });
+    loadExams();
+}
+
+// INIT
+loadExams();
+
+</script>
+
+</body>
+</html>

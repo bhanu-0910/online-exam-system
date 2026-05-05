@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+```
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    /* GRID */
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    /* CARD */
+    .admin-card {
+        background: white;
+        padding: 18px;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+
+    .admin-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .admin-card h4 {
+        margin-bottom: 8px;
+    }
+
+    .admin-card p {
+        margin: 5px 0;
+    }
+
+    .admin-card button {
+        margin-top: 10px;
+        background: #b30000;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .admin-card button:hover {
+        background: #8c0000;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="main">
+
+```
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h3>Admin</h3>
+
+    <a href="#" onclick="showUsers()">
+        <i class="fa fa-users"></i> Users
+    </a>
+
+    <a href="#" onclick="showExams()">
+        <i class="fa fa-file"></i> Exams
+    </a>
+
+    <a href="#" onclick="showResults()">
+        <i class="fa fa-chart-bar"></i> Results
+    </a>
+
+    <a href="../login.html">
+        <i class="fa fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <h2>Admin Dashboard</h2>
+
+    <h3 id="sectionTitle">Select an option</h3>
+
+    <!-- 🔥 CARD GRID -->
+    <div id="output" class="admin-grid"></div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+/* ================= USERS ================= */
+async function showUsers() {
+    document.getElementById("sectionTitle").innerText = "Users";
+
+    let res = await fetch("http://localhost:5000/users");
+    let users = await res.json();
+
+    let out = document.getElementById("output");
+    out.innerHTML = "";
+
+    if (users.length === 0) {
+        out.innerHTML = "<p>No users found</p>";
+        return;
+    }
+
+    users.forEach(u => {
+        out.innerHTML += `
+        <div class="admin-card">
+            <h4>${u.name}</h4>
+            <p>Role: ${u.role}</p>
+
+            ${u.approved 
+                ? '<p style="color:green;">✔ Approved</p>' 
+                : `<button onclick="approveUser(${u.id})">Approve</button>`}
+        </div>`;
+    });
+}
+
+/* APPROVE USER */
+async function approveUser(id) {
+    await fetch(`http://localhost:5000/approve/${id}`, { method: "POST" });
+    showUsers();
+}
+
+
+/* ================= EXAMS ================= */
+async function showExams() {
+    document.getElementById("sectionTitle").innerText = "Exams";
+
+    let res = await fetch("http://localhost:5000/exams");
+    let exams = await res.json();
+
+    let out = document.getElementById("output");
+    out.innerHTML = "";
+
+    if (exams.length === 0) {
+        out.innerHTML = "<p>No exams available</p>";
+        return;
+    }
+
+    exams.forEach(e => {
+        out.innerHTML += `
+        <div class="admin-card">
+            <h4>${e.title}</h4>
+            <p>Subject: ${e.subject}</p>
+            <button onclick="deleteExam(${e.id})">Delete</button>
+        </div>`;
+    });
+}
+
+/* DELETE EXAM */
+async function deleteExam(id) {
+    await fetch(`http://localhost:5000/delete-exam/${id}`, { method: "DELETE" });
+    showExams();
+}
+
+
+/* ================= RESULTS ================= */
+async function showResults() {
+    document.getElementById("sectionTitle").innerText = "Results";
+
+    let res = await fetch("http://localhost:5000/results");
+    let data = await res.json();
+
+    let out = document.getElementById("output");
+    out.innerHTML = "";
+
+    if (data.length === 0) {
+        out.innerHTML = "<p>No results yet</p>";
+        return;
+    }
+
+    data.forEach(r => {
+        out.innerHTML += `
+        <div class="admin-card">
+            <h4>${r.student}</h4>
+            <p>Exam: ${r.exam}</p>
+            <p>Score: ${r.score}</p>
+        </div>`;
+    });
+}
+
+</script>
+
+</body>
+</html>

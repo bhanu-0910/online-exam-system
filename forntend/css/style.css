@@ -1,0 +1,628 @@
+/* ================= RESET ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ================= THEME COLORS ================= */
+:root {
+    --primary: #990011;
+    --primary-dark: #7a000d;
+    --bg-main: #FCF6F5;
+    --bg-secondary: #fff5f5;
+    --card: #ffffff;
+    --accent: #22c55e;
+    --danger: #ef4444;
+    --text-main: #111827;
+    --text-light: #6b7280;
+    --border: #f3dcdc;
+}
+.content {
+    margin-left: 240px;
+    padding: px;
+    
+
+    background: url("https://t3.ftcdn.net/jpg/05/00/34/58/360_F_500345899_4OqmtspFst6SRnNQvLj7h7TfKOrBwTer.jpg") no-repeat center center;
+    background-size: 100% auto; 
+
+    min-height: 100vh;
+    position: 100% auto;
+}
+/* ================= BODY ================= */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg-main);
+    min-height: 100vh;
+}
+
+/* ================= LAYOUT ================= */
+.main {
+    display: flex;
+    
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 230px;
+    background: var(--primary);
+    color: white;
+    padding: 20px;
+}
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar h3 {
+    margin-bottom: 25px;
+}
+
+.sidebar a {
+    display: block;
+    color: #ffe4e6;
+    text-decoration: none;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    transition: .3s;
+}
+
+.sidebar a:hover {
+    background: var(--primary-dark);
+    transform: translateX(5px);
+}
+
+.sidebar a.active {
+    background: white;
+    color: var(--primary);
+}
+
+.sidebar i {
+    margin-right: 10px;
+}
+
+/* ================= CONTENT ================= */
+.content {
+    flex: 1;
+    padding: 40px;
+}
+
+/* ================= TOPBAR ================= */
+.topbar {
+    margin-bottom: 20px;
+}
+
+.topbar button {
+    background: var(--primary);
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+}
+
+/* ================= CARDS ================= */
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card-box {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    width: 150px;
+    text-align: center;
+    transition: .3s;
+    box-shadow: 0 6px 18px rgba(153, 0, 17, 0.1);
+}
+
+.card-box:hover {
+    transform: scale(1.05);
+}
+
+/* ================= FORM ================= */
+.form-box {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 400px;
+    box-shadow: 0 6px 18px rgba(153, 0, 17, 0.1);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+/* ================= BUTTON ================= */
+button {
+    background: var(--primary);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+/* ================= AUTH (LOGIN/REGISTER) ================= */
+.auth-container {
+    max-width: 380px;
+    margin: 80px auto;
+    background: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+/* LOGO */
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+/* AUTH TITLE */
+.auth-container h2 {
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+.auth-container input,
+.auth-container select {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.auth-container input:focus,
+.auth-container select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(153,0,17,0.1);
+}
+
+/* PASSWORD */
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    cursor: pointer;
+}
+
+/* LINKS */
+.auth-container a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+/* ================= LOADER ================= */
+.loader {
+    border: 4px solid #eee;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+    display: none;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ================= ERROR ================= */
+.error {
+    color: var(--danger);
+    text-align: center;
+}
+
+/* ================= SUCCESS ================= */
+#successPopup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+}
+
+/* ================= EXAM PAGE ================= */
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #ccc;
+    margin: 15px 0;
+    border-radius: 5px;
+}
+
+#progress {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+}
+
+/* ================= EXAM LAYOUT ================= */
+.exam-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.exam-left {
+    flex: 3;
+}
+
+.exam-right {
+    flex: 1;
+    background: var(--card);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* ================= PALETTE ================= */
+#palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+#palette button {
+    padding: 10px;
+}
+
+/* ================= QUESTION STATES ================= */
+.answered {
+    background: var(--primary);
+    color: white;
+}
+
+.not-answered {
+    background: #e5e7eb;
+}
+
+.review {
+    background: #f59e0b;
+    color: white;
+}
+
+/* ================= EXAM CARDS ================= */
+.exam-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.exam-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ================= HISTORY ================= */
+.history-card {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* ================= CODE OUTPUT ================= */
+#outputBox {
+    background: black;
+    color: #00ff00;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+
+  background: linear-gradient(90deg, #7C3AED, #06B6D4);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* EXAM GRID */
+.exam-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* ===== EXAM CONTAINER SPACING ===== */
+.container {
+    padding: 30px 50px;
+}
+
+/* HEADER */
+.container h2 {
+    margin-bottom: 10px;
+}
+
+#timer {
+    font-weight: bold;
+    color: var(--primary);
+}
+
+/* LAYOUT */
+.exam-layout {
+    margin-top: 20px;
+}
+
+/* LEFT CARD */
+.exam-left {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* QUESTION TEXT */
+.question-area p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* OPTIONS */
+label {
+    display: block;
+    background: #f9fafb;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+label:hover {
+    background: #f1f5f9;
+}
+
+/* CONTROLS */
+.question-controls {
+    margin-top: 20px;
+}
+
+/* NAV BUTTONS (RIGHT SIDE) */
+.nav-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* RIGHT PANEL */
+.exam-right {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* QUESTION BOXES */
+#palette button {
+    border-radius: 6px;
+}
+
+/* SUBMIT FIXED */
+.submit-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+}
+
+.submit-fixed button {
+    padding: 12px 18px;
+    font-size: 14px;
+    background: var(--accent);
+}
+
+.submit-fixed button:hover {
+    background: #16a34a;
+}
+
+/* WARNING */
+#warningBox {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* POPUP */
+.popup-box {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.popup {
+    display: none;   /* IMPORTANT */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+/* ===== PERFORMANCE PAGE ===== */
+
+/* Heading */
+.content h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Grid layout */
+.performance-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Card style */
+.performance-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 220px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.performance-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Title inside card */
+.performance-card h3 {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+/* Value inside card */
+.performance-card p {
+    font-size: 26px;
+    font-weight: bold;
+    color: #222;
+}
+
+/* Color indicators */
+.performance-card.best {
+    border-left: 5px solid #28a745;
+}
+
+.performance-card.avg {
+    border-left: 5px solid #007bff;
+}
+
+.performance-card.total {
+    border-left: 5px solid #ff9800;
+}
+
+/* ===== ATTEMPTS PAGE ===== */
+
+/* ===== ATTEMPT LIST CONTAINER ===== */
+.attempt-list {
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
+/* ===== EACH ATTEMPT ROW ===== */
+.attempt-row {
+    background: white;
+    padding: 18px 22px;
+
+    margin-bottom: 25px;   /* ✅ THIS gives space between rows */
+
+    border-radius: 12px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+/* HOVER EFFECT */
+.attempt-row:hover {
+    transform: translateY(-3px);
+}
+
+/* TITLE */
+.attempt-row h3 {
+    font-size: 16px;
+    margin: 0;
+    color: #222;
+}
+
+/* SCORE */
+.attempt-row p {
+    margin: 0;
+    font-weight: bold;
+    color: #444;
+}
+/* DASHBOARD BOXES */
+.dashboard-cards {
+    display: flex;
+    gap: 25px;
+    margin-top: 25px;
+}
+
+/* EACH BOX */
+.dash-card {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    min-height: 300px;
+    transition: 0.3s;
+}
+
+/* HOVER */
+.dash-card:hover {
+    transform: translateY(-5px);
+}
+
+/* TITLE */
+.dash-card h3 {
+    margin-bottom: 10px;
+    color: #b30000;
+}
+
+/* TEXT */
+.dash-card p {
+    color: #555;
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+    .dashboard-cards {
+        flex-direction: column;
+    }
+}

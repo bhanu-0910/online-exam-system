@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <h2 style="text-align:center;margin-top:40px",class="title">Online Exam System</h2>
+
+    <div class="auth-container">
+
+        <h2>Login</h2>
+
+        <form id="loginForm">
+
+            <input type="email" id="email" placeholder="Email" required>
+
+            <div class="password-box">
+                <input type="password" id="password" placeholder="Password" required>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword(this,'password')"></i>
+            </div>
+
+            <select id="role" required>
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <button id="loginBtn">Login</button>
+
+            <div class="loader" id="loader"></div>
+            <p class="error" id="errorMsg"></p>
+
+        </form>
+
+        <p>New user? <a href="register.html">Register</a></p>
+
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

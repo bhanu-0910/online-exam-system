@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Evaluate</title>
+</head>
+
+<body>
+
+    <div class="main">  
+
+    
+    <div class="sidebar">
+        <h3>Teacher</h3>
+        <a href="dashboard.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
+        <a href="question-bank.html"><i class="fa fa-book"></i> Question Bank</a>
+        <a href="create-exam.html"><i class="fa fa-pen"></i> Create Exam</a>
+        <a href="schedule.html"><i class="fa fa-clock"></i> Schedule</a>
+        <a href="results.html"><i class="fa fa-chart-bar"></i> Results</a>
+        <a href="../login.html"><i class="fa fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <h2>Evaluate Answers</h2>
+
+    <select id="exam_id"></select>
+
+    <div id="answers"></div>
+
+    <script>
+
+        /* LOAD EXAMS */
+        async function loadExams() {
+            let exams = await (await fetch("http://localhost:5000/exams")).json();
+
+            let select = document.getElementById("exam_id");
+
+            exams.forEach(e => {
+                select.innerHTML += `<option value="${e.id}">${e.title}</option>`;
+            });
+        }
+
+        /* LOAD ANSWERS */
+        async function loadAnswers() {
+
+            let exam_id = document.getElementById("exam_id").value;
+
+            let res = await fetch(`http://localhost:5000/answers/${exam_id}`);
+            let data = await res.json();
+
+            let div = document.getElementById("answers");
+            div.innerHTML = "";
+
+            data.forEach(a => {
+
+                div.innerHTML += `
+        <div style="border:1px solid #ccc;padding:10px;margin:10px;">
+            <b>Student:</b> ${a.student}<br>
+            <b>Question:</b> ${a.question}<br>
+            <b>Answer:</b> ${a.answer}<br>
+
+            Marks: <input type="number" id="m${a.id}" value="${a.marks}">
+            <button onclick="saveMarks(${a.id})">Save</button>
+        </div>`;
+            });
+        }
+
+        /* SAVE MARKS */
+        async function saveMarks(id) {
+
+            let marks = document.getElementById("m" + id).value;
+
+            await fetch("http://localhost:5000/evaluate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ answer_id: id, marks })
+            });
+
+            alert("Saved");
+        }
+
+        document.getElementById("exam_id").addEventListener("change", loadAnswers);
+
+        loadExams();
+
+    </script>
+
+</body>
+
+</html>

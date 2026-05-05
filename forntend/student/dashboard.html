@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+```
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- CALENDAR -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+```
+
+</head>
+
+<body>
+
+<div class="main">
+
+```
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h3>Student</h3>
+
+    <a href="dashboard.html" class="active">
+        <i class="fa fa-home"></i> Home
+    </a>
+
+    <a href="Available_exam.html">
+        <i class="fa fa-book"></i> Available Exams
+    </a>
+
+    <a href="My_attempts.html">
+        <i class="fa fa-history"></i> My Attempts
+    </a>
+
+    <a href="Performence.html">
+        <i class="fa fa-chart-bar"></i> Performance
+    </a>
+
+    <a href="#" onclick="logout()">
+        <i class="fa fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <h2>Welcome 👋</h2>
+
+    <!-- TOP CARD -->
+    <div class="exam-card">
+        <h3>Start Your Journey</h3>
+        <p>Choose exams, track attempts, and improve performance.</p>
+    </div>
+
+    <!-- DASHBOARD BOXES -->
+    <div class="dashboard-cards">
+
+        <div class="dash-card">
+            <h3><i class="fa fa-bell"></i> Latest Updates</h3>
+            <p>No new updates</p>
+        </div>
+
+        <div class="dash-card">
+            <h3><i class="fa fa-calendar"></i> Upcoming Exams</h3>
+            <p>No exams scheduled</p>
+        </div>
+
+        <div class="dash-card">
+            <h3><i class="fa fa-clock"></i> Calendar</h3>
+            <div id="calendar"></div>
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+/* LOGOUT */
+function logout() {
+    localStorage.clear();
+    window.location.href = "../login.html";
+}
+
+/* CALENDAR LOAD */
+document.addEventListener('DOMContentLoaded', function () {
+
+    let calendarEl = document.getElementById('calendar');
+
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        height: 300,
+
+        events: [
+            { title: 'Math Exam', date: '2026-05-10' },
+            { title: 'Science Test', date: '2026-05-15' }
+        ]
+    });
+
+    calendar.render();
+});
+
+</script>
+
+</body>
+</html>

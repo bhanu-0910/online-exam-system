@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Results</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+
+    <div class="main">
+
+
+        <div class="sidebar">
+            <h3>Teacher</h3>
+            <a href="dashboard.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
+            <a href="question-bank.html"><i class="fa fa-book"></i> Question Bank</a>
+            <a href="create-exam.html"><i class="fa fa-pen"></i> Create Exam</a>
+            <a href="schedule.html"><i class="fa fa-clock"></i> Schedule</a>
+            <a href="results.html"><i class="fa fa-chart-bar"></i> Results</a>
+            <a href="../login.html"><i class="fa fa-sign-out-alt"></i> Logout</a>
+        </div>
+
+        <div class="content">
+
+            <h2>Student Results</h2>
+
+            <select id="filterExam"></select>
+            <button onclick="exportCSV()">Download CSV</button>
+            <p id="avgScore"></p>
+
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Exam</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+
+                <tbody id="resultTable"></tbody>
+            </table>
+
+        </div>
+
+        <script>
+
+            async function loadExamFilter() {
+                let exams = await (await fetch("http://localhost:5000/exams")).json();
+                let select = document.getElementById("filterExam");
+
+                select.innerHTML = `<option value="">All Exams</option>`;
+
+                exams.forEach(e => {
+                    select.innerHTML += `<option value="${e.id}">${e.title}</option>`;
+                });
+            }
+
+            async function loadResults() {
+
+                let res = await fetch("http://localhost:5000/results");
+                let data = await res.json();
+
+                let selected = document.getElementById("filterExam").value;
+
+                if (selected) {
+                    data = data.filter(r => r.exam_id == selected);
+                }
+
+                let table = document.getElementById("resultTable");
+                table.innerHTML = "";
+
+                data.forEach(r => {
+                    table.innerHTML += `
+        <tr>
+            <td>${r.student}</td>
+            <td>${r.email}</td>
+            <td>${r.exam}</td>
+            <td>${r.score}</td>
+        </tr>`;
+                });
+
+                showAnalytics(data);
+            }
+
+            function showAnalytics(data) {
+                if (data.length === 0) return;
+
+                let avg = data.reduce((a, b) => a + b.score, 0) / data.length;
+                document.getElementById("avgScore").innerText =
+                    "Average Score: " + avg.toFixed(2);
+            }
+
+            function exportCSV() {
+
+                let rows = [["Student", "Email", "Exam", "Score"]];
+
+                document.querySelectorAll("#resultTable tr").forEach(tr => {
+                    let cols = tr.querySelectorAll("td");
+
+                    if (cols.length) {
+                        rows.push([
+                            cols[0].innerText,
+                            cols[1].innerText,
+                            cols[2].innerText,
+                            cols[3].innerText
+                        ]);
+                    }
+                });
+
+                let csv = rows.map(r => r.join(",")).join("\n");
+
+                let blob = new Blob([csv]);
+
+                let a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "results.csv";
+                a.click();
+            }
+
+            document.getElementById("filterExam").addEventListener("change", loadResults);
+
+            loadExamFilter();
+            loadResults();
+
+        </script>
+
+</body>
+
+</html>

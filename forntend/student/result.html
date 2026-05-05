@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Student</h3>
+
+        <a href="dashboard.html">
+            <i class="fa fa-home"></i> Home
+        </a>
+
+        <a href="Available_exam.html">
+            <i class="fa fa-book"></i> Available Exams
+        </a>
+
+        <a href="My_attempts.html">
+            <i class="fa fa-history"></i> My Attempts
+        </a>
+
+        <a href="performance.html">
+            <i class="fa fa-chart-bar"></i> Performance
+        </a>
+
+        <a href="#" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <h2>Exam Result</h2>
+
+        <div class="card">
+
+            <p><b>Exam:</b> <span id="examName"></span></p>
+            <p><b>Your Score:</b> <span id="score"></span></p>
+            <p><b>Total Questions:</b> <span id="total"></span></p>
+            <p><b>Percentage:</b> <span id="percentage"></span>%</p>
+
+        </div>
+
+        <button onclick="goBack()">⬅ Back to Dashboard</button>
+
+    </div>
+
+</div>
+
+<script>
+
+async function loadResult() {
+
+    let score = parseInt(localStorage.getItem("score"));
+    let exam_id = localStorage.getItem("exam_id");
+
+    let questions = await (await fetch(`http://localhost:5000/questions/${exam_id}`)).json();
+    let total = questions.length;
+
+    let exams = await (await fetch("http://localhost:5000/exams")).json();
+    let exam = exams.find(e => e.id == exam_id);
+
+    document.getElementById("examName").innerText =
+        exam ? exam.title : "Unknown Exam";
+
+    document.getElementById("score").innerText =
+        isNaN(score) ? "0" : score;
+
+    document.getElementById("total").innerText = total;
+
+    let percent = total > 0 ? ((score / total) * 100).toFixed(2) : 0;
+
+    document.getElementById("percentage").innerText = percent;
+}
+
+/* LOGOUT */
+function logout() {
+    localStorage.clear();
+    window.location.href = "../login.html";
+}
+
+function goBack() {
+    window.location.href = "dashboard.html";
+}
+
+loadResult();
+
+</script>
+
+</body>
+</html>

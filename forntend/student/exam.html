@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Exam</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Exam</h2>
+    <p>Time Left: <span id="timer"></span></p>
+
+    
+
+    <div class="exam-layout">
+
+        <!-- LEFT -->
+        <div class="exam-left">
+
+            <div id="qHeader"></div>
+
+            <div class="question-area">
+                <div id="questionBox"></div>
+            </div>
+
+            <!-- NEW CONTROLS -->
+            <div class="question-controls">
+
+                <div class="nav-buttons">
+                    <button onclick="prev()">⟵ Prev</button>
+                    <button onclick="next()">Next ⟶</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="markReview()">Mark</button>
+                    <button onclick="clearAnswer()">Clear</button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="exam-right">
+            <h4>Questions</h4>
+            <div id="palette"></div>
+
+            <div class="legend">
+                <p><span class="box answered"></span> Answered</p>
+                <p><span class="box not-answered"></span> Not Answered</p>
+                <p><span class="box review"></span> Marked</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SUBMIT FIXED -->
+<div class="submit-fixed">
+    <button class="submit-btn" onclick="confirmSubmit()">Submit Exam</button>
+</div>
+
+<!-- WARNING -->
+<div id="warningBox">
+    ⚠ Warnings: <span id="warningCount">0</span>/5
+</div>
+
+<!-- SUBMIT POPUP -->
+<div id="submitPopup" class="popup">
+    <div class="popup-box">
+        <h3>Submit Exam?</h3>
+        <button onclick="submitExam()">Yes</button>
+        <button onclick="closePopup()">Cancel</button>
+    </div>
+</div>
+
+<script>
+
+let exam_id = localStorage.getItem("exam_id");
+let user_id = localStorage.getItem("user_id");
+
+let questions = [];
+let exam = null;
+let current = 0;
+
+let answers = JSON.parse(localStorage.getItem("answers")) || {};
+let review = JSON.parse(localStorage.getItem("review")) || {};
+let outputs = JSON.parse(localStorage.getItem("outputs")) || {};
+
+let time = 0;
+let timer;
+
+/* LOAD EXAM */
+async function loadExam() {
+    let exams = await (await fetch("http://localhost:5000/exams")).json();
+    exam = exams.find(e => e.id == exam_id);
+}
+
+/* LOAD QUESTIONS */
+async function loadQuestions() {
+    let res = await fetch(`http://localhost:5000/questions/${exam_id}`);
+    questions = await res.json();
+
+    if (!questions.length) {
+        document.getElementById("qHeader").innerText = "No Questions Found";
+        return;
+    }
+
+    renderPalette();
+    renderQuestion();
+}
+
+/* RENDER QUESTION */
+function renderQuestion() {
+
+    let q = questions[current];
+
+    document.getElementById("qHeader").innerHTML =
+        `<b>Question ${current + 1} of ${questions.length}</b>`;
+
+    let html = `<p>${q.question}</p>`;
+
+    /* MCQ */
+    if (exam.type === "MCQ") {
+        html += ["A", "B", "C", "D"].map(opt => `
+            <label>
+                <input type="radio" name="q"
+                value="${opt}"
+                ${answers[current] === opt ? "checked" : ""}
+                onchange="saveAnswer('${opt}')">
+                ${q["option" + opt]}
+            </label>
+        `).join("");
+    }
+
+    /* CODING */
+    else if (exam.type === "Coding") {
+        html += `
+<textarea id="codeBox" rows="8" style="width:100%;font-family:monospace;"
+oninput="saveAnswer(this.value)">${answers[current] || ""}</textarea>
+
+<br><br>
+
+<button onclick="runCode()">▶ Run Code</button>
+
+<pre id="output" style="background:#000;color:#0f0;padding:10px;min-height:80px;"></pre>
+        `;
+    }
+
+    /* SUBJECTIVE */
+    else {
+        html += `
+<textarea rows="5" style="width:100%"
+oninput="saveAnswer(this.value)">${answers[current] || ""}</textarea>
+        `;
+    }
+
+    document.getElementById("questionBox").innerHTML = html;
+
+    if (exam.type === "Coding") {
+        setTimeout(() => {
+            let el = document.getElementById("output");
+            if (el) el.innerText = outputs[current] || "";
+        }, 0);
+    }
+}
+
+/* SAVE */
+function saveAnswer(val) {
+    answers[current] = val;
+    delete review[current];
+    localStorage.setItem("answers", JSON.stringify(answers));
+    renderPalette();
+}
+
+/* NAVIGATION */
+function next() { if (current < questions.length - 1) { current++; renderQuestion(); } }
+function prev() { if (current > 0) { current--; renderQuestion(); } }
+
+function clearAnswer() {
+    delete answers[current];
+    renderQuestion();
+}
+
+function markReview() {
+    review[current] = true;
+    localStorage.setItem("review", JSON.stringify(review));
+    renderPalette();
+}
+
+function jump(i) { current = i; renderQuestion(); }
+
+/* PALETTE */
+function renderPalette() {
+    let p = document.getElementById("palette");
+    p.innerHTML = "";
+
+    questions.forEach((q, i) => {
+        let cls = "not-answered";
+        if (review[i]) cls = "review";
+        else if (answers[i]) cls = "answered";
+
+        p.innerHTML += `<button onclick="jump(${i})" class="${cls}">${i + 1}</button>`;
+    });
+}
+
+/* TIMER */
+async function loadTimer() {
+    let exams = await (await fetch("http://localhost:5000/exams")).json();
+    let ex = exams.find(e => e.id == exam_id);
+
+    time = ex.duration * 60;
+
+    timer = setInterval(() => {
+        time--;
+
+        let m = Math.floor(time / 60);
+        let s = time % 60;
+
+        document.getElementById("timer").innerText =
+            `${m}:${s < 10 ? "0" + s : s}`;
+
+        if (time <= 0) {
+            clearInterval(timer);
+            submitExam();
+        }
+
+    }, 1000);
+}
+
+/* RUN CODE */
+async function runCode() {
+
+    try {
+
+        let code = document.getElementById("codeBox").value;
+        let language = document.getElementById("language").value;
+        let q = questions[current];
+
+        let test_cases = JSON.parse(q.test_cases || "[]");
+
+        let outputBox = document.getElementById("output");
+        outputBox.innerText = "Running...";
+
+        let res = await fetch("http://localhost:5000/run-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language, test_cases })
+        });
+
+        let data = await res.json();
+
+        let outputHTML = "";
+        let score = data.score || 0;
+
+        data.results.forEach((r, i) => {
+            outputHTML += `
+Test ${i + 1}: ${r.status}
+Expected: ${r.expected}
+Output: ${r.output}
+
+`;
+        });
+
+        outputHTML += `\nScore: ${score}`;
+
+        outputs[current] = outputHTML;
+        localStorage.setItem("outputs", JSON.stringify(outputs));
+
+        outputBox.innerText = outputHTML;
+
+    } catch (err) {
+        document.getElementById("output").innerText = "❌ Error running code";
+    }
+}
+
+/* SUBMIT */
+function confirmSubmit() {
+    document.getElementById("submitPopup").style.display = "block";
+}
+
+function closePopup() {
+    document.getElementById("submitPopup").style.display = "none";
+}
+
+async function submitExam() {
+
+    clearInterval(timer);
+
+    let total = questions.length;
+    let score = 0;
+
+    if (exam.type === "MCQ") {
+        questions.forEach((q, i) => {
+            if (answers[i] === q.correct) score++;
+        });
+    }
+
+    else if (exam.type === "Coding") {
+        questions.forEach((q, i) => {
+            let output = outputs[i] || "";
+            let match = output.match(/Score:\s*(\d+)/);
+            if (match) score += parseInt(match[1]);
+        });
+    }
+
+    console.log("Submitting:", { user_id, exam_id, score });
+
+    try {
+
+        let res = await fetch("http://localhost:5000/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id, exam_id, score })
+        });
+
+        let data = await res.json();
+
+        console.log("Server Response:", data);
+
+        if (res.ok) {
+            alert("Exam submitted successfully ✅");
+
+            localStorage.setItem("score", score);
+            localStorage.setItem("total", total);
+            localStorage.setItem("exam_title", exam.title);
+
+            window.location.href = "result.html";
+        } else {
+            alert("Submission failed ❌");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error ❌");
+    }
+}
+
+/* INIT */
+async function init() {
+    await loadExam();
+    await loadQuestions();
+    await loadTimer();
+}
+
+init();
+
+</script>
+
+</body>
+</html>

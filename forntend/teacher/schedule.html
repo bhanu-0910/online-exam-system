@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Schedule Exam</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="main">  
+
+    
+    <div class="sidebar">
+        <h3>Teacher</h3>
+        <a href="dashboard.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
+        <a href="question-bank.html"><i class="fa fa-book"></i> Question Bank</a>
+        <a href="create-exam.html"><i class="fa fa-pen"></i> Create Exam</a>
+        <a href="schedule.html"><i class="fa fa-clock"></i> Schedule</a>
+        <a href="results.html"><i class="fa fa-chart-bar"></i> Results</a>
+        <a href="../login.html"><i class="fa fa-sign-out-alt"></i> Logout</a>
+    </div>
+        <div class="content">
+
+            <div class="topbar">
+                <button onclick="goBack()">⬅ Back</button>
+            </div>
+
+            <h2>Schedule Exam</h2>
+
+            <div class="form-box">
+
+                <select id="examSelect">
+                    <option value="">Select Exam</option>
+                </select>
+
+                <input type="date" id="date">
+                <input type="time" id="time">
+
+                <button onclick="scheduleExam()">Schedule</button>
+
+                <p id="msg"></p>
+
+            </div>
+
+            <h3 style="margin-top:30px;">Scheduled Exams</h3>
+            <ul id="scheduleList"></ul>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // LOAD EXAMS INTO DROPDOWN
+        async function loadExams() {
+            let exams = await (await fetch("http://localhost:5000/exams")).json();
+
+            let select = document.getElementById("examSelect");
+
+            exams.forEach(e => {
+                let opt = document.createElement("option");
+                opt.value = e.id;
+                opt.textContent = e.title;
+                select.appendChild(opt);
+            });
+        }
+
+        // SCHEDULE EXAM (LOCAL STORAGE FOR NOW)
+        function scheduleExam() {
+
+            let exam = document.getElementById("examSelect");
+            let examName = exam.options[exam.selectedIndex].text;
+
+            let date = document.getElementById("date").value;
+            let time = document.getElementById("time").value;
+
+            if (!exam.value || !date || !time) {
+                document.getElementById("msg").innerText = "Fill all fields!";
+                return;
+            }
+
+            let schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+
+            schedules.push({ examName, date, time });
+
+            localStorage.setItem("schedules", JSON.stringify(schedules));
+
+            document.getElementById("msg").style.color = "green";
+            document.getElementById("msg").innerText = "Scheduled successfully!";
+
+            loadSchedules();
+        }
+
+        // SHOW SCHEDULES
+        function loadSchedules() {
+            let list = document.getElementById("scheduleList");
+            list.innerHTML = "";
+
+            let schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+
+            if (schedules.length === 0) {
+                list.innerHTML = "<li>No schedules</li>";
+                return;
+            }
+
+            schedules.forEach(s => {
+                list.innerHTML += `<li>${s.examName} → ${s.date} at ${s.time}</li>`;
+            });
+        }
+
+        loadExams();
+        loadSchedules();
+
+    </script>
+
+</body>
+
+</html>

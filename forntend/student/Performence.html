@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Performance</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Student</h3>
+
+        <a href="dashboard.html">
+            <i class="fa fa-home"></i> Home
+        </a>
+
+        <a href="Available_exam.html">
+            <i class="fa fa-book"></i> Available Exams
+        </a>
+
+        <a href="My_attempts.html">
+            <i class="fa fa-history"></i> My Attempts
+        </a>
+
+        <a href="Performence.html" class="active">
+            <i class="fa fa-chart-bar"></i> Performance
+        </a>
+
+        <a href="#" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+  
+<div class="content">
+
+    <h2>Performance</h2>
+
+    <div class="performance-grid">
+
+        <div class="performance-card best">
+            <h3>Best Score</h3>
+            <p id="bestScore">0</p>
+        </div>
+
+        <div class="performance-card avg">
+            <h3>Average Score</h3>
+            <p id="avgScore">0.00</p>
+        </div>
+
+        <div class="performance-card total">
+            <h3>Total Attempts</h3>
+            <p id="attempts">0</p>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+let user_id = localStorage.getItem("user_id");
+
+/* LOAD PERFORMANCE */
+async function loadPerformance() {
+
+    let results = await (await fetch(`http://localhost:5000/results/${user_id}`)).json();
+
+    if(results.length === 0){
+        document.getElementById("bestScore").innerText = "No data yet";
+        return;
+    }
+
+    let scores = results.map(r => r.score);
+
+    let best = Math.max(...scores);
+    let avg = (scores.reduce((a,b)=>a+b,0) / scores.length).toFixed(2);
+
+    document.getElementById("bestScore").innerText = "Best Score: " + best;
+    document.getElementById("avgScore").innerText = "Average Score: " + avg;
+    document.getElementById("totalAttempts").innerText = "Total Attempts: " + results.length;
+}
+
+/* LOGOUT */
+function logout() {
+    localStorage.clear();
+    window.location.href = "../login.html";
+}
+
+loadPerformance();
+
+</script>
+
+</body>
+</html>

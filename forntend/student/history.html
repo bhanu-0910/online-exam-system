@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Attempt History</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Attempt History</h2>
+
+    <ul id="historyList"></ul>
+
+    <button onclick="goBack()">Back</button>
+
+</div>
+
+<script>
+
+async function loadHistory(){
+
+    let user_id = localStorage.getItem("user_id");
+    let exam_id = localStorage.getItem("history_exam_id");
+
+    let results = await (await fetch(`http://localhost:5000/results/${user_id}`)).json();
+
+    let list = document.getElementById("historyList");
+    list.innerHTML = "";
+
+    let filtered = results.filter(r => r.exam_id == exam_id);
+
+    if(filtered.length === 0){
+        list.innerHTML = "<li>No attempts</li>";
+        return;
+    }
+
+    filtered.forEach((r,i)=>{
+        list.innerHTML += `
+        <li>
+            Attempt ${i+1} → Score: ${r.score}
+        </li>`;
+    });
+}
+
+function goBack(){
+    window.location.href = "dashboard.html";
+}
+
+loadHistory();
+
+</script>
+
+</body>
+</html>

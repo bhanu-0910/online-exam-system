@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Available Exams</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Student</h3>
+
+        <a href="dashboard.html">
+            <i class="fa fa-home"></i> Home
+        </a>
+
+        <a href="Available_exam.html" class="active">
+            <i class="fa fa-book"></i> Available Exams
+        </a>
+
+        <a href="My_attempts.html">
+            <i class="fa fa-history"></i> My Attempts
+        </a>
+
+        <a href="Performence.html">
+            <i class="fa fa-chart-bar"></i> Performance
+        </a>
+
+        <a href="#" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <h2>Available Exams</h2>
+
+        <select id="filterCategory" onchange="loadExams()">
+            <option value="">All Categories</option>
+            <option value="GATE">GATE</option>
+            <option value="JEE Mains">JEE Mains</option>
+            <option value="JEE Advanced">JEE Advanced</option>
+            <option value="BITSAT">BITSAT</option>
+            <option value="Placement">Placement</option>
+        </select>
+
+        <div id="examGrid" class="exam-grid"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+let user_id = localStorage.getItem("user_id");
+
+/* LOAD EXAMS */
+async function loadExams() {
+
+    let exams = await (await fetch("http://localhost:5000/exams")).json();
+    let results = await (await fetch(`http://localhost:5000/results/${user_id}`)).json();
+
+    let selected = document.getElementById("filterCategory").value;
+    if (selected) {
+        exams = exams.filter(e => e.category === selected);
+    }
+
+    let grid = document.getElementById("examGrid");
+    grid.innerHTML = "";
+
+    exams.forEach(exam => {
+
+        let attempts = results.filter(r => r.exam_id == exam.id);
+        let lastScore = attempts.length ? attempts[0].score : "-";
+
+        let catClass = (exam.category || "").toLowerCase().replace(/\s/g, "");
+
+        grid.innerHTML += `
+        <div class="exam-card">
+
+            <h3>${exam.title}</h3>
+
+            <span class="category ${catClass}">
+                ${exam.category || "General"}
+            </span>
+
+            <p><b>Type:</b> ${exam.type}</p>
+            <p><b>Attempts:</b> ${attempts.length}</p>
+            <p><b>Last Score:</b> ${lastScore}</p>
+
+            <button onclick="startExam(${exam.id})">
+                ${attempts.length ? "Reattempt" : "Start"}
+            </button>
+
+        </div>`;
+    });
+}
+
+/* START EXAM */
+function startExam(id) {
+    localStorage.setItem("exam_id", id);
+    window.location.href = "exam.html";
+}
+
+/* LOGOUT */
+function logout() {
+    localStorage.clear();
+    window.location.href = "../login.html";
+}
+
+loadExams();
+
+</script>
+
+</body>
+</html>
